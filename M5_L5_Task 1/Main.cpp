@@ -11,64 +11,72 @@
 
 На консоль необходимо вывести исходный массив, затем должен идти вывод вашей функции.*/
 
+
 #include <iostream>
-#include <string>
 
-void print_pyramid(int* arr, int size)
-{
-    std::cout << "Пирамида: " << std::endl;
-
-    // Выводим корневой элемент
-    std::cout << "0 root(" << arr[0] << ") " << arr[0] << std::endl;
-
-    // Перебираем все уровни пирамиды
-    for (int level = 0; level < size / 2; ++level)
-    {
-        // Перебираем все позиции на текущем уровне (левый и правый ребенок)
-        for (int position = 0; position < 2; ++position)
-        {
-            // Вычисляем индекс элемента на текущем уровне и позиции
-            int index = (1 << (level + 1)) - 1 + position;
-
-            // Определяем строку для обозначения позиции (левый/правый)
-            std::string position_str = (position == 0) ? "left" : "right";
-
-            // Вычисляем индекс родителя
-            int parent_index = (index - 1) >> 1;
-
-            // Выводим информацию о элементе:
-            // - Уровень
-            // - Позиция (левый/правый)
-            // - Значение родителя
-            // - Значение элемента
-            std::cout << level + 1 << " " << position_str << "(" << arr[parent_index] << ") " << arr[index] << std::endl;
-        }
-
-    }
-
+// Функция для вычисления индекса родителя по индексу потомка
+int pyramid_parent_index(int child_index) {
+    // Возвращает индекс родителя, используя формулу (child_index - 1) / 2
+    return (child_index - 1) / 2;
 }
 
+// Функция для определения, является ли элемент левым потомком
+bool pyramid_is_left(int index) {
+    // Возвращает true, если элемент является левым потомком (index % 2 == 1),
+    // и false, если правым (index % 2 == 0)
+    return (index % 2 == 1);
+}
 
-int main()
-{
-	setlocale(LC_ALL, "ru");
+// Функция для определения уровня элемента
+int pyramid_level(int index) {
+    // Возвращает уровень элемента, используя формулу log2(index + 1)
+    return static_cast<int>(log2(index + 1));
+}
 
-    int* arr = new int[6] {1, 3, 6, 5, 9, 8}; // выделяем память для массива из 6 элементов, объявляем указатель на массив целых чисел
-    int arr_size = 6; // размер массива
+// Функция для вывода пирамиды
+void print_pyramid(int* arr, int size) {
 
+    std::cout << "Пирамида:" << std::endl;
 
+    // Выводит корневой элемент
+    // - Уровень 0
+    // - Позиция "root"
+    // - Значение элемента
+    std::cout << 0 << " root(" << arr[0] << ") " << arr[0] << std::endl;
+
+    // Перебираем все элементы массива, начиная со второго
+    for (int i = 1; i < size; ++i) {
+        // Вычисляем индекс, уровень и позицию текущего элемента
+        int parent_index = pyramid_parent_index(i);
+        int level = pyramid_level(i);
+        std::string position_str = pyramid_is_left(i) ? "left" : "right";
+
+        // Выводим информацию о текущем элементе:
+        // - Уровень
+        // - Позиция (левый/правый)
+        // - Значение родителя
+        // - Значение элемента
+        std::cout << level << " " << position_str << "(" << arr[parent_index] << ") " << arr[i] << std::endl;
+    }
+}
+
+int main() {
+    setlocale(LC_ALL, "ru");
+
+    
+    int* arr = new int[6] {1, 3, 6, 5, 9, 8}; 
+    int arr_size = 6; 
+
+    // Выводим исходный массив
     std::cout << "Исходный массив: ";
-
-    for (int i = 0; i < arr_size; ++i) 
-    {
-        std::cout << arr[i] << " " ;
-    } 
+    for (int i = 0; i < arr_size; ++i) {
+        std::cout << arr[i] << " ";
+    }
     std::cout << std::endl;
 
     print_pyramid(arr, arr_size);
 
-
     delete[] arr;
 
-	return 0;
+    return 0;
 }
